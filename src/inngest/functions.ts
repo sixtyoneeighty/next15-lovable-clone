@@ -1,5 +1,5 @@
 import { inngest } from "./client";
-import { createAgent, gemini, createTool, createNetwork, type Tool } from "@inngest/agent-kit";
+import { createAgent, openai, createTool, createNetwork, type Tool } from "@inngest/agent-kit";
 import  { Sandbox } from "@e2b/code-interpreter"
 import { getSandbox } from "./utils";
 import { z } from "zod";
@@ -31,9 +31,19 @@ export const codeAgentFunction = inngest.createFunction(
       name: "code-agent",
       description: "An expert coding agent",
       system: PROMPT,
-      model: gemini({
-        model: "gemini-1.5-flash", 
-        apiKey: process.env.GEMINI_API_KEY
+      model: openai({
+        model: "o4-mini",
+        apiKey: process.env.OPENAI_API_KEY,
+        defaultParameters: {
+          reasoning: { effort: "high" },
+          tools: [
+            {
+              type: "mcp",
+              server_label: "context7",
+              server_url: process.env.CONTEXT7_MCP_SERVER_URL || "",
+            },
+          ],
+        },
       }),
       tools: [                                                                       // Herramientas del agente de código
         
